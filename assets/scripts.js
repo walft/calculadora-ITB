@@ -190,94 +190,113 @@ function gerarPDF(event) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
+  // Cabeçalho
   doc.setFillColor(9, 11, 14);
-  doc.rect(0, 0, 210, 34, 'F');
+  doc.rect(0, 0, 210, 32, 'F');
   doc.setFillColor(20, 86, 200);
-  doc.rect(0, 32, 210, 3, 'F');
+  doc.rect(0, 30, 210, 3, 'F');
 
   doc.setTextColor(215, 249, 26);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(15);
-  doc.text('RELATÓRIO DE ÍNDICE TORNOZELO-BRAQUIAL (ITB)', 14, 15);
+  doc.text('RELATÓRIO DE ÍNDICE TORNOZELO-BRAQUIAL (ITB)', 14, 14);
   doc.setTextColor(226, 232, 240);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  doc.text(`Data da avaliação: ${dataFormatada} às ${horaFormatada}`, 14, 24);
+  doc.text(`Data da avaliação: ${dataFormatada} às ${horaFormatada}`, 14, 23);
+
+  // Tarja de Alerta / Aviso no PDF
+  doc.setFillColor(254, 249, 195);
+  doc.setDrawColor(20, 86, 200);
+  doc.roundedRect(14, 38, 182, 18, 2, 2, 'FD');
+  doc.setFillColor(20, 86, 200);
+  doc.rect(14, 38, 3.5, 18, 'F');
 
   doc.setTextColor(15, 23, 42);
-  doc.setFillColor(241, 245, 249);
-  doc.roundedRect(14, 42, 182, 24, 3, 3, 'F');
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('DADOS DO PACIENTE', 18, 50);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10.5);
-  doc.text(`Nome: ${nome}`, 18, 58);
-  doc.text(`Idade: ${idade} anos`, 145, 58);
+  doc.setFontSize(8.8);
+  const textoTarjaPdf = 'AVISO: Este documento é apenas um alerta e ferramenta de apoio. Para um diagnóstico preciso e conduta clínica adequada, procure um médico.';
+  const linhasTarja = doc.splitTextToSize(textoTarjaPdf, 172);
+  doc.text(linhasTarja, 20, 45);
 
+  // Dados do Paciente
+  doc.setTextColor(15, 23, 42);
+  doc.setFillColor(241, 245, 249);
+  doc.roundedRect(14, 61, 182, 22, 3, 3, 'F');
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('PRESSÕES ARTERIAIS SISTÓLICAS AFERIDAS (PAS)', 14, 78);
+  doc.setFontSize(10.5);
+  doc.text('DADOS DO PACIENTE', 18, 69);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.text(`Nome: ${nome}`, 18, 77);
+  doc.text(`Idade: ${idade} anos`, 145, 77);
+
+  // Pressões Aferidas
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10.5);
+  doc.text('PRESSÕES ARTERIAIS SISTÓLICAS AFERIDAS (PAS)', 14, 94);
 
   doc.setDrawColor(203, 213, 225);
   doc.setFillColor(248, 250, 252);
-  doc.rect(14, 82, 182, 34, 'FD');
+  doc.rect(14, 98, 182, 32, 'FD');
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10.5);
-  doc.text(`• Braço Direito (BD): ${dadosAtuais.bd} mmHg`, 18, 91);
-  doc.text(`• Braço Esquerdo (BE): ${dadosAtuais.be} mmHg`, 110, 91);
-  doc.text(`• Tornozelo Direito (TD): ${dadosAtuais.td} mmHg`, 18, 100);
-  doc.text(`• Tornozelo Esquerdo (TE): ${dadosAtuais.te} mmHg`, 110, 100);
+  doc.setFontSize(10);
+  doc.text(`• Braço Direito (BD): ${dadosAtuais.bd} mmHg`, 18, 106);
+  doc.text(`• Braço Esquerdo (BE): ${dadosAtuais.be} mmHg`, 110, 106);
+  doc.text(`• Tornozelo Direito (TD): ${dadosAtuais.td} mmHg`, 18, 115);
+  doc.text(`• Tornozelo Esquerdo (TE): ${dadosAtuais.te} mmHg`, 110, 115);
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9.5);
+  doc.setFontSize(9.2);
   doc.setTextColor(20, 86, 200);
-  doc.text(`Referência braquial utilizada (maior PAS): ${dadosAtuais.maiorBraquial} mmHg (${dadosAtuais.ladoMaior})`, 18, 110);
+  doc.text(`Referência braquial utilizada (maior PAS): ${dadosAtuais.maiorBraquial} mmHg (${dadosAtuais.ladoMaior})`, 18, 125);
 
-  let yPos = 126;
+  let yPos = 140;
 
   if (dadosAtuais.difBraquial >= 15) {
     doc.setFillColor(254, 243, 199);
-    doc.roundedRect(14, yPos - 5, 182, 14, 2, 2, 'F');
+    doc.roundedRect(14, yPos - 5, 182, 13, 2, 2, 'F');
     doc.setTextColor(146, 64, 14);
-    doc.setFontSize(9.5);
+    doc.setFontSize(9.2);
     doc.text(`Alerta: Diferença interbraquial de ${dadosAtuais.difBraquial} mmHg (>= 15 mmHg).`, 18, yPos + 3);
-    yPos += 18;
+    yPos += 17;
   }
 
+  // Resultados ITB
   doc.setTextColor(15, 23, 42);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(10.5);
   doc.text('RESULTADOS E INTERPRETAÇÃO CLÍNICA', 14, yPos);
   yPos += 6;
 
   doc.setDrawColor(203, 213, 225);
-  doc.roundedRect(14, yPos, 182, 36, 3, 3, 'S');
+  doc.roundedRect(14, yPos, 182, 34, 3, 3, 'S');
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(10.5);
   doc.text(`ITB Direito: ${dadosAtuais.itbD.replace('.', ',')}  —  ${dadosAtuais.classD.titulo}`, 18, yPos + 9);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9.5);
+  doc.setFontSize(9.2);
   const linhasD = doc.splitTextToSize(dadosAtuais.classD.descricao, 174);
   doc.text(linhasD, 18, yPos + 17);
-  yPos += 42;
+  yPos += 40;
 
-  doc.roundedRect(14, yPos, 182, 36, 3, 3, 'S');
+  doc.roundedRect(14, yPos, 182, 34, 3, 3, 'S');
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(10.5);
   doc.text(`ITB Esquerdo: ${dadosAtuais.itbE.replace('.', ',')}  —  ${dadosAtuais.classE.titulo}`, 18, yPos + 9);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9.5);
+  doc.setFontSize(9.2);
   const linhasE = doc.splitTextToSize(dadosAtuais.classE.descricao, 174);
   doc.text(linhasE, 18, yPos + 17);
-  yPos += 44;
+  yPos += 42;
 
+  // Nota técnica no rodapé
   doc.setFontSize(8.5);
   doc.setTextColor(100, 116, 139);
-  const nota = 'Protocolo: Aferição em decúbito dorsal após 5 a 10 minutos de repouso. Fórmula: ITB = PAS do Tornozelo / Maior PAS Braquial. Este documento serve como apoio à avaliação clínica e não substitui diagnóstico médico.';
+  const nota = 'Protocolo: Aferição em decúbito dorsal após 5 a 10 minutos de repouso. Fórmula: ITB = PAS do Tornozelo / Maior PAS Braquial. Este relatório tem caráter meramente informativo/de alerta e não substitui avaliação médica.';
   const linhasNota = doc.splitTextToSize(nota, 182);
-  doc.text(linhasNota, 14, yPos + 6);
+  doc.text(linhasNota, 14, yPos + 5);
 
   const nomeArquivo = `ITB_${nome.replace(/\s+/g, '_')}_${dataFormatada.replace(/\//g, '-')}.pdf`;
   doc.save(nomeArquivo);
@@ -286,7 +305,6 @@ function gerarPDF(event) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Eventos dos 4 campos de pressão
   ['pas-bd', 'pas-be', 'pas-td', 'pas-te'].forEach(id => {
     const campo = document.getElementById(id);
     campo.addEventListener('input', atualizarCalculo);
@@ -294,7 +312,6 @@ document.addEventListener('DOMContentLoaded', function () {
     campo.addEventListener('change', atualizarCalculo);
   });
 
-  // Pontos clicáveis na figura humana
   document.querySelectorAll('.limb-marker').forEach(dot => {
     dot.addEventListener('click', () => {
       const targetId = dot.getAttribute('data-target');
@@ -302,7 +319,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Botões e controles principais
   document.getElementById('protocolHeader').addEventListener('click', toggleProtocol);
   document.getElementById('btn-limpar').addEventListener('click', limparCampos);
   document.getElementById('btn-calcular').addEventListener('click', atualizarCalculo);
